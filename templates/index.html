@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor | ML Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .predictor-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-sub);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, ring 0.2s;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: #166534;
+            margin-bottom: 0.25rem;
+        }
+
+        .price-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #15803d;
+        }
+
+        .input-summary {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="predictor-card">
+        <h1>House Price Predictor</h1>
+        <p class="subtitle">Enter property details to get an estimate</p>
+        
+        <form action="/predict" method="post">
+            <div class="form-group">
+                <label for="area">Area (Square Feet)</label>
+                <input type="number" id="area" name="area" value="{{ area if area else 1500 }}" min="500" max="10000" step="10" required>
+            </div>
+            
+            <div class="form-group" style="display: flex; gap: 1rem;">
+                <div style="flex: 1;">
+                    <label for="bedrooms">Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" value="{{ bedrooms if bedrooms else 3 }}" min="1" max="10" required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="bathrooms">Bathrooms</label>
+                    <input type="number" id="bathrooms" name="bathrooms" value="{{ bathrooms if bathrooms else 2 }}" min="1" max="5" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location Rating (1-5)</label>
+                <select name="location" id="location" required>
+                    <option value="1" {{ 'selected' if location == 1 }}>1 - Basic</option>
+                    <option value="2" {{ 'selected' if location == 2 }}>2 - Developing</option>
+                    <option value="3" {{ 'selected' if location == 3 or not location }}>3 - Good Neighborhood</option>
+                    <option value="4" {{ 'selected' if location == 4 }}>4 - Premium</option>
+                    <option value="5" {{ 'selected' if location == 5 }}>5 - Ultra Luxury</option>
+                </select>
+            </div>
+
+            <button type="submit">Calculate Prediction</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result-container">
+            <div class="result-label">Estimated Price</div>
+            <div class="price-value">${{ prediction }}</div>
+            <div class="input-summary">
+                Based on {{ area }} sqft, {{ bedrooms }} BHK, {{ bathrooms }} Bath
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
